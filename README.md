@@ -16,9 +16,20 @@ Message app.
 Command
 -------------
 
-> **Command:** Yarn
-> - Install project.
-> **Command:** Yarn run blendid
-> - Launch dev server
-> **Command:** Yarn run blendid -- build
-> - Build app for production (in public folder)
+    yarn
+
+Install project.
+
+
+    yarn run blendid
+
+
+Launch dev server
+
+
+    yarn run blendid -- build
+
+Build app for production (in public folder)
+
+    
+
