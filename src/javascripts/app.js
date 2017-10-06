@@ -48,7 +48,7 @@ import {
 
 
 let database = firebase.database();
-console.log(database);
+
 let ref = database.ref('chats');
 ref.on('value',gotData ,errData);
 
@@ -66,7 +66,7 @@ import PrivateRoute from './components/Router/privateRoute';
 
 import Home from './views/home';
 import Login from './views/login';
-import NotFound from './views/pageNotFound';
+import { NotFound } from './views/pageNotFound';
 
 const About = () => (
     <div>
@@ -78,7 +78,6 @@ const About = () => (
     </div>
 );
 
-import { NoMatch } from './views/pageNotFound';
 
 class App extends Component {
     constructor(){
@@ -102,7 +101,7 @@ class App extends Component {
                         <PrivateRoute exact path="/" component={Home} isAuthenticated={this.state.isAuthenticated}/>
                         <Route path="/about" component={About}/>
                         <Route path="/login" render={(props)=>(<Login isAuthenticated={this.state.isAuthenticated} />)} />
-                        <Route component={NoMatch}/>
+                        <Route component={NotFound} status={404}/>
                     </Switch>
                 </div>
             </HashRouter>
