@@ -17,16 +17,17 @@ class PrivateRoute extends Component{
     }
 
     render(){
-        console.log(this.state.isAuthenticated);
+        // console.log(this.state.isAuthenticated);
         const ProtectedComponent = this.props.component;
         console.log('Passed Props');
         console.log(ProtectedComponent);
+        console.log(this.props.componentProps);
         return(
             <Route
                 exact={this.state.exact}
                 component={
                     props => (
-                        this.state.isAuthenticated ? <ProtectedComponent {...this.props.componentProps}/> : <Redirect to="/login"/>
+                        this.state.isAuthenticated != null ? <ProtectedComponent {...this.props.componentProps}/> : <Redirect to="/login"/>
                     )
                 }
             />

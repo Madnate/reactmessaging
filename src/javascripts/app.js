@@ -1,7 +1,7 @@
 import firebase from './data/fire.js';
 import React, { Component } from 'react';
 import {render} from 'react-dom';
-
+import {connect, Provider} from 'react-redux';
 import {
     HashRouter,
     Route,
@@ -9,61 +9,14 @@ import {
     Switch
 } from "react-router-dom";
 
-// import store from './store';
+import store from './store';
 
-
-// firebase.auth().onAuthStateChanged(function(user) {
-//     if (user) {
-//         console.log("HELLO USER");
-//         // User is signed in.
-//         // var displayName = user.displayName;
-//         // var email = user.email;
-//         // var emailVerified = user.emailVerified;
-//         // var photoURL = user.photoURL;
-//         // var isAnonymous = user.isAnonymous;
-//         // var uid = user.uid;
-//         // var providerData = user.providerData;
-//         // ...
-//         console.log(user.id);
-//     } else {
-//         // User is signed out.
-//         // ...
-//     }
-// });
-// var email = 'test2@test.test';
-// var password = '123456';
-//
-// firebase.auth().signInWithEmailAndPassword(email, password)
-//     .then(success=>{
-//         console.log('BITCH');
-//         console.log(success);
-//     })
-//     .catch(function(error) {
-//     // Handle Errors here.
-//     var errorCode = error.code;
-//     var errorMessage = error.message;
-//     // ...
-// });
-//
-
-
-let database = firebase.database();
-
-let ref = database.ref('chats');
-ref.on('value',gotData ,errData);
-
-function gotData(data){
-    console.log(data.val());
-}
-function errData(err){
-    console.log('Firebase : No Data');
-}
+//Action 
+import { login, logout } from './actions/UserAction';
 
 import PrivateRoute from './components/Router/privateRoute';
 
-//import Full from './containers/Full/full';
-
-
+//Views
 import Home from './views/home';
 import Login from './views/login';
 import { NotFound } from './views/pageNotFound';
@@ -80,33 +33,49 @@ const About = () => (
 
 
 class App extends Component {
-    constructor(){
-        super();
-        this.state = {
-            isAuthenticated : false
-        }
-    }
 
     render(){
+        console.log(this.props.user);
         return(
-            <HashRouter>
-                <div>
-                    <ul>
-                        <li><Link to="/">Home</Link></li>
-                        <li><Link to="/test">Test</Link></li>
-                        <li><Link to="/about">About</Link></li>
-                    </ul>
-                    <Switch>
-                        {/*<Route exact path="/" component={Home}/>*/}
-                        <PrivateRoute exact path="/" component={Home} isAuthenticated={this.state.isAuthenticated}/>
-                        <Route path="/about" component={About}/>
-                        <Route path="/login" render={(props)=>(<Login isAuthenticated={this.state.isAuthenticated} />)} />
-                        <Route component={NotFound} status={404}/>
-                    </Switch>
-                </div>
-            </HashRouter>
+            <Provider store={this.props.store}>
+                <HashRouter>
+                    <div>
+                        <ul>
+                            <li><Link to="/">Home</Link></li>
+                            <li><Link to="/test">Test</Link></li>
+                            <li><Link to="/about">About</Link></li>
+                        </ul>
+                        <Switch>
+                            <PrivateRoute 
+                                exact 
+                                path="/" 
+                                isAuthenticated={this.props.user.uid}
+                                componentProps={this.props.user}
+                                component={Home}
+                             />
+                            <Route path="/about" component={About}/>
+                            <Route path="/login" render={(props)=>(<Login user={this.props.user}handleForm={(userEmail,userPassword)=> this.props.login(userEmail,userPassword)} />)} />
+                            <Route component={NotFound} status={404}/>
+                        </Switch>
+                    </div>
+                </HashRouter>
+            </Provider>
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    }
+}
 
-render(<App />, document.getElementById('app'));
+const mapDispatchToProps = dispatch => {
+    return {
+        login: (userEmail,userPassword) => {
+            dispatch(login(userEmail,userPassword))
+        }
+    }
+}
+const Root = connect(mapStateToProps, mapDispatchToProps)(App);
+
+render(<Root store={store} />, document.getElementById('app'));
